@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>CommandLine.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BasicTests (17-Nov-2014 23:51:35)</a> &gt; <a href="../../index.html" class="el_group">CruiseControl</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">CommandLine.java</span></div><h1>CommandLine.java</h1><pre class="source lang-java linenums">/**
+ * You should *not* modify this file!
+ * The main class for a command-line program which reads in
+ * a file containing the sequence of state updates, and outputs
+ * the resulting states after each pulse. You could use this to
+ * check your output, but you should be doing that via your automatic tests.
+ */
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+
+<span class="nc" id="L14">public class CommandLine {</span>
+
+	/**
+	 * The main method that simply takes the command-line arguments as
+	 * as the single parameter.
+	 * @throws IOException 
+	 */
+	public static void main(String[] commandLineArgs) throws IOException {
+<span class="fc" id="L22">		Path input_path = Paths.get(commandLineArgs[0]);</span>
+<span class="fc" id="L23">		List&lt;InputState&gt; input_states = StateInput.input_states_from_file(input_path);</span>
+<span class="fc" id="L24">		Timer timer = new Timer(new CruiseControlSystem());</span>
+<span class="fc" id="L25">		List&lt;OutputState&gt; output_states = timer.pulse_from_input(input_states);</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		for (OutputState s : output_states){</span>
+<span class="fc" id="L27">			System.out.println(s.format());</span>
+		}
+<span class="fc" id="L29">	}</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BasicTests (17-Nov-2014 23:51:35)</div></body></html>

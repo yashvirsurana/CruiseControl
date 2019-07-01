@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>CruiseControlSystem.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BasicTests (17-Nov-2014 23:51:35)</a> &gt; <a href="../../index.html" class="el_group">CruiseControl</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">CruiseControlSystem.java</span></div><h1>CruiseControlSystem.java</h1><pre class="source lang-java linenums">/**
+ * This is the main class that you need to implement. You only have
+ * a single method to implement, but of course that may be easier if
+ * you define some auxiliary methods.
+ */ 
+<span class="fc" id="L6">public class CruiseControlSystem implements ICruiseControlSystem {</span>
+	/*
+	 * Students may add any private fields or methods that they deem
+	 * necessary. Public ones should not be necessary (there is no
+	 * rule against it, but you should not be changing the support code
+	 * and the rest of the code knows only about this).
+	 */
+<span class="fc" id="L13">	boolean cruiseControlStatus = false; // this variable checks if CCS is running or not</span>
+<span class="fc" id="L14">	double storedThrottlePosition = 0.0; // this variable is for storing the last known throttle in memory</span>
+<span class="fc" id="L15">	boolean accelerateButtonPressed = false; // this variable checks if accelerate button is pressed</span>
+<span class="fc" id="L16">	boolean acceleratePedalPressed = false; // this variable checks  if accelerator pedal is pressed</span>
+<span class="fc" id="L17">	boolean turnOff = false; // this variable checks if the driver wants to turn the system off</span>
+<span class="fc" id="L18">	double currentThrottlePosition = 0.0; // this variable is for the current throttle position</span>
+<span class="fc" id="L19">	double af = 0.15; //// this variable is an acceleration factor (just a design we chose for accelerator pedal's working</span>
+	
+	private boolean checkConditions(Car car) { 
+<span class="fc bfc" id="L22" title="All 2 branches covered.">		if (car.engine_sensor.is_engine_on()</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">			&amp;&amp; !car.brake_pedal.is_brake_on()</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">			&amp;&amp; car.speed_sensor.get_speed() &gt;= 40.0 </span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">			&amp;&amp; car.speed_sensor.get_speed() &lt; 250.0) {</span>
+<span class="fc" id="L26">			return true;</span>
+		}
+		else {
+<span class="fc" id="L29">			return false;</span>
+		}
+	}
+	// the method above is to check the pre conditions of the system as in the class diagram
+ 	
+	private void startCruisingButton(Car car) {
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (checkConditions(car)) {</span>
+<span class="fc" id="L36">			double speed = car.speed_sensor.get_speed();</span>
+<span class="fc" id="L37">			cruiseControlStatus = true;</span>
+<span class="fc" id="L38">			currentThrottlePosition = speed/50.0;</span>
+<span class="fc" id="L39">			storedThrottlePosition = currentThrottlePosition;</span>
+<span class="fc" id="L40">			car.throttle.setThrottlePosition(storedThrottlePosition);</span>
+		}
+<span class="fc" id="L42">	}</span>
+	// the method above acts for the start cruising button
+	
+	private void resumeCCS(Car car) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (storedThrottlePosition == 0.0) {</span>
+<span class="fc" id="L47">			startCruisingButton(car);</span>
+<span class="fc" id="L48">		}</span>
+		else {
+<span class="fc" id="L50">			currentThrottlePosition = storedThrottlePosition;</span>
+<span class="fc" id="L51">			car.throttle.setThrottlePosition(storedThrottlePosition);</span>
+<span class="fc" id="L52">			cruiseControlStatus = true;</span>
+		}
+<span class="fc" id="L54">	}</span>
+	// the method above acts for the resume button
+	
+	private void startAcceleratingButton(Car car) {
+<span class="fc" id="L58">		accelerateButtonPressed = true;</span>
+<span class="fc" id="L59">	}</span>
+	
+	// the method above acts for the start accelerating button
+	
+	private void stopAcceleratingButton(Car car) {
+<span class="fc" id="L64">		accelerateButtonPressed = false;</span>
+<span class="fc" id="L65">		storedThrottlePosition = currentThrottlePosition;</span>
+<span class="fc" id="L66">	}</span>
+	
+	// the method above acts for hte stop accelerating button
+	
+	private void startAcceleratingFromPedal(Car car) {
+<span class="fc" id="L71">		acceleratePedalPressed = true;</span>
+<span class="fc" id="L72">	}</span>
+	// the method above is just for the accelerator pedal
+	
+	private void stopAcceleratingFromPedal(Car car) {
+<span class="fc" id="L76">		acceleratePedalPressed = false;</span>
+<span class="fc" id="L77">		storedThrottlePosition = currentThrottlePosition;</span>
+<span class="fc" id="L78">		car.throttle.setThrottlePosition(storedThrottlePosition);</span>
+<span class="fc" id="L79">	}</span>
+	// the method above is also just fo rhte accelerator pedal
+	
+	
+	private void stopCruisingFromButton(Car car) {
+<span class="fc" id="L84">		cruiseControlStatus = false;</span>
+<span class="fc" id="L85">		turnOff = true;</span>
+<span class="fc" id="L86">	}</span>
+	// the method above acts for the stop cruising button
+	
+	private void stopCruisingFromBrake(Car car) {
+		//if (car.brake_pedal.is_brake_on()) {
+<span class="fc" id="L91">			cruiseControlStatus = false;</span>
+			//car.throttle.setThrottlePosition(0.0);
+	//	}
+<span class="fc" id="L94">	}</span>
+	// the method above portrays the alternative situation of the CCS being turned off by pressing of brake
+	
+	private void accelerateUsingButton(Car car) {
+<span class="fc" id="L98">		currentThrottlePosition = car.throttle.getThrottlePosition();</span>
+		//double a = 7.2;
+		//double st = 50;
+		//double tc = a / st;
+		// acceleration is 2 m/s^2 so in terms of throttle position the accl is 7.2/50 = 0.144;
+<span class="fc" id="L103">		double gas = currentThrottlePosition + 0.144;</span>
+<span class="fc" id="L104">		storedThrottlePosition = currentThrottlePosition;</span>
+		/*if (gas &gt; 5) {
+			storedThrottlePosition = 5;
+		}
+		else {
+			storedThrottlePosition = gas;
+		}*/
+<span class="fc" id="L111">		storedThrottlePosition = gas;</span>
+		
+<span class="fc" id="L113">		car.throttle.setThrottlePosition(storedThrottlePosition);</span>
+		
+		// the method above is how accelerate using button works, we couldn't get the scenario when car's speed is above 250.0 (ie throttle 5.0) to work.
+<span class="fc" id="L116">	}</span>
+	
+	private void accelerateUsingPedal(Car car) {
+		// double af = 0.15; //acceleration factor 
+		// we have a very sporty accelerator which would either be fully pressed or fully released
+		// acceleration factor of 0.15 corresponds to a gradual acceleration of 7.5 km/hr^2 
+		// which leaves room for tuning and other engine modifications etc.
+<span class="fc" id="L123">		double throtFromPedal = (car.accelerator_pedal.get_accelerator() * af) + currentThrottlePosition;</span>
+		//storedThrottlePosition = throtFromPedal;
+		/*if (throtFromPedal &gt; 5) {
+			storedThrottlePosition = 5;
+		}
+		else {
+			storedThrottlePosition = throtFromPedal;
+		}*/
+<span class="fc" id="L131">		storedThrottlePosition = throtFromPedal;</span>
+<span class="fc" id="L132">		car.throttle.setThrottlePosition(storedThrottlePosition);</span>
+<span class="fc" id="L133">	}</span>
+	// the method above is how accelerate using pedal works, we couldn't get the scenario when car's speed is above 250.0 (ie throttle 5.0) to work.
+
+	
+	public void pulse(Car car){
+		
+		// conditions for all methods defined above to work 
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (checkConditions(car)) { // check conditions (PRE_CONDITIONS)</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (car.dashboard.get_start_accelerating()) { </span>
+<span class="fc" id="L142">				startAcceleratingButton(car);</span>
+			}
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			if (car.dashboard.get_stop_accelerating()) {</span>
+<span class="fc" id="L145">				stopAcceleratingButton(car);</span>
+			}
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			if (car.dashboard.get_stop_ccs()) {</span>
+<span class="fc" id="L148">				stopCruisingFromButton(car);</span>
+			}
+			//if (car.brake_pedal.is_brake_on()) {
+			//	stopCruisingFromBrake(car);
+			//}
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			if (car.accelerator_pedal.is_accelerator_on()) {</span>
+<span class="fc" id="L154">				startAcceleratingFromPedal(car);</span>
+			}
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (!car.accelerator_pedal.is_accelerator_on()) {</span>
+<span class="fc" id="L157">				stopAcceleratingFromPedal(car);</span>
+			}
+<span class="pc bpc" id="L159" title="1 of 4 branches missed.">			if (checkConditions(car) &amp;&amp; car.dashboard.get_start_ccs()) {</span>
+<span class="fc" id="L160">				startCruisingButton(car);</span>
+			}
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">			if (checkConditions(car) &amp;&amp; car.dashboard.get_resume()) {</span>
+<span class="fc" id="L163">				resumeCCS(car);</span>
+			}
+		}
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		if (car.brake_pedal.is_brake_on()) {</span>
+<span class="fc" id="L167">			stopCruisingFromBrake(car);</span>
+		}
+		
+<span class="fc bfc" id="L170" title="All 4 branches covered.">		if (accelerateButtonPressed &amp;&amp; acceleratePedalPressed) { //if accelerate pedal and button both are used at the same time</span>
+<span class="fc" id="L171">			double acceleratePedalPosition = car.accelerator_pedal.get_accelerator();	</span>
+<span class="fc" id="L172">			double throttleAchievedFromGasPedal = acceleratePedalPosition * af;</span>
+<span class="fc" id="L173">			accelerateUsingButton(car);</span>
+			/*if(0.144 &gt;= throttleAchievedFromGasPedal) { //if both are pressed it uses the default value for acceleration by button
+				accelerateUsingButton(car);
+			}
+			else {
+				accelerateUsingPedal(car);
+			}*/
+<span class="fc" id="L180">		}</span>
+			
+<span class="fc bfc" id="L182" title="All 2 branches covered.">		else if (accelerateButtonPressed) {</span>
+<span class="fc" id="L183">			accelerateUsingButton(car);</span>
+<span class="fc" id="L184">		}</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		else if (acceleratePedalPressed) {</span>
+<span class="fc" id="L186">			accelerateUsingPedal(car);</span>
+		}
+			 
+		//-------------------------------//
+		
+<span class="fc" id="L191">	}</span>
+	
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BasicTests (17-Nov-2014 23:51:35)</div></body></html>

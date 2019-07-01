@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>StateInput.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BasicTests (17-Nov-2014 23:51:35)</a> &gt; <a href="../../index.html" class="el_group">CruiseControl</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">StateInput.java</span></div><h1>StateInput.java</h1><pre class="source lang-java linenums">/**
+ * You should *not* modify this file!
+ * This class simply allows the convenient input to the system. The input
+ * consists of lines of input states which are all in the format described
+ * in the InputState class. Here you can retrieve the input from a list or
+ * array of input strings, or from an input file path.
+ */
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+<span class="nc" id="L17">public final class StateInput {</span>
+	public static List&lt;InputState&gt; input_states_from_strings(List&lt;String&gt; lines){
+<span class="fc" id="L19">		LinkedList&lt;InputState&gt; input_states = new LinkedList&lt;InputState&gt;();</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">		for (String s : lines){</span>
+<span class="fc" id="L21">			input_states.add(new InputState(s));</span>
+		}
+		
+<span class="fc" id="L24">		return input_states;</span>
+	}
+	public static List&lt;InputState&gt; input_states_from_strings(String[] lines){
+<span class="fc" id="L27">		return input_states_from_strings(Arrays.asList(lines));</span>
+	}
+		
+	public static List&lt;InputState&gt;input_states_from_file (Path filename) throws IOException{
+<span class="fc" id="L31">		List&lt;String&gt; input_lines = Files.readAllLines(filename, StandardCharsets.UTF_8);</span>
+<span class="fc" id="L32">		return input_states_from_strings(input_lines);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BasicTests (17-Nov-2014 23:51:35)</div></body></html>
